@@ -60,13 +60,72 @@ def getDateIndex(date):
 
 #%% Plots
 
-
 plt.figure()
 plt.plot(getInfected('France',getDateIndex('2/22/20')),'x',label='France')
 plt.plot(getInfected('Italy',getDateIndex('2/22/20')),'x',label='Italy')
 plt.xlabel('Number of days after February 22th')
 plt.ylabel('Number of infected persons')
 plt.legend()
+
+
+#%% data to be used  
+
+countries = ['Italy','France','Switzerland','Spain','Netherlands']
+populations = [60.5e6, 67e6, 8.6e6, 46.6e6, 17.2e6]
+n_countries = [0,8,5,5,9]
+date = '2/22/20'
+
+
+
+
+#%% 
+# For the ongoing part, I want to compare one european country with Italy, which can be quite tricky
+# One one plot, we are going to show Italy, the country X, and the country X shifted by n_x days 
+
+countryIndex = 4
+country = countries[countryIndex]
+n = n_countries[countryIndex]
+y_italy = getInfected('Italy',getDateIndex(date)) / populations[0]
+y_country = getInfected(country,getDateIndex(date)) / populations[countryIndex]
+plt.figure()
+# Italy is the reference 
+plt.plot(y_italy,'x',label='Italy')
+# Plot the second country
+plt.plot(y_country,'x',label=country)
+plt.plot(y_country[n:],'x-.',label=country + ' shifted by ' + str(n) + ' days')
+plt.xlabel('Number of days after ' + date)
+plt.ylabel('Ratio of infected persons')
+plt.title('Italy versus ' + country + '  (normalized by population) \nDays lagging behind Italy: ' + str(n))
+plt.legend()
+
+#%% Make of this a nice plot that recap this situation in europe
+
+title = 'Analysis of Covid-19 for different european countries \n' 
+title += 'Normalised populations are used to compare the progress of the virus.\n'
+title += 'Italy is used as the reference to compare other european countries.\n'
+title += 'Each country is shifted by an amount of days and then compared with Italy.\n'
+title += 'A. Bricq & J. Felisaz - updated on ' + confirmed.columns[-1]
+
+fig = plt.figure(figsize = (15,18))
+#fig.suptitle('bold figure suptitle', fontsize=14, fontweight='bold')
+plt.figtext(0.1, 0.98, title, fontsize = 20, linespacing = 2)
+
+for i in range(1,len(countries)):
+
+    country = countries[i]
+    n = n_countries[i]
+    y_italy = getInfected('Italy',getDateIndex(date)) / populations[0]
+    y_country = getInfected(country,getDateIndex(date)) / populations[i]
+    
+    plt.subplot(2,2,i)
+    plt.plot(y_italy,'x',label='Italy')
+    plt.plot(y_country,'x',label=country)
+    plt.plot(y_country[n:],'x-.',label=country + ' shifted by ' + str(n) + ' days')
+    plt.xlabel('Number of days after ' + date)
+    plt.ylabel('Ratio of infected persons')
+    plt.title('Italy versus ' + country + ' \nDays lagging behind Italy: ' + str(n))
+    plt.legend()
+    
 
 
 
