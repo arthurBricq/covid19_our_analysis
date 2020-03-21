@@ -4,13 +4,11 @@ This repo offers a template to analyze the virus situation in Europe.
 
 We do not attribute any value to what is computed, it is only a visualization tool that we developed. 
 
-## Computed data
-
-Here are the graphs that we generated
+## Presentation of the generated graphs
 
 ### Normalized comparison between different European countries
 
-![](.\figures\_normalisedComparisonWithItaly.png)
+![](./figures/_normalisedComparisonWithItaly.png)
 
 ### Number of cases in some European countries
 
