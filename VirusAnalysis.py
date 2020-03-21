@@ -5,9 +5,12 @@ Created on Mon Mar 16 16:36:47 2020
 @author: Arthur Bricq and Johan Felizas
 """
 #%% Required imports
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from os import system 
+
 
 #%% Get the data 
 
@@ -18,7 +21,6 @@ recovered = pd.read_csv(path + "time_series_19-covid-Recovered.csv")
 
 #%% Basic operations
 
-# Count the number of infected persons 
 
 def getNumberOfInfected():
     """
@@ -38,10 +40,6 @@ def getNumberOfInfectedForCountry(country):
         return -1
     return sum(confirmed[indexes].iloc[:,-1])
 
-print("Number of cases in France: ", getNumberOfInfectedForCountry('France'))
-
-
-#%% Make some plots of what we want 
 
 def getInfected(country,start,numberOfDays=confirmed.keys().shape[0]-4):
     """
@@ -52,18 +50,37 @@ def getInfected(country,start,numberOfDays=confirmed.keys().shape[0]-4):
     """
     return sum(confirmed[confirmed['Country/Region'] == country].iloc[:,4+start:4+numberOfDays].values)
 
-print(getInfected('France',0))
+def getDeaths(country,start,numberOfDays=confirmed.keys().shape[0]-4):
+    """
+    Returns an array with the cumulative number of death starting from day start to day end.
+    - start is supposed to be indexed (starting from 0)
+    0 means it is day 1/22/20 (January 22)
+    - numberOfDays: if not set, will display until last day
+    """
+    return sum(death[confirmed['Country/Region'] == country].iloc[:,4+start:4+numberOfDays].values)
+
+def getRecovered(country,start,numberOfDays=confirmed.keys().shape[0]-4):
+    """
+    Returns an array with the cumulative number of recovered starting from day start to day end.
+    - start is supposed to be indexed (starting from 0)
+    0 means it is day 1/22/20 (January 22)
+    - numberOfDays: if not set, will display until last day
+    """
+    return sum(recovered[confirmed['Country/Region'] == country].iloc[:,4+start:4+numberOfDays].values)
 
 def getDateIndex(date):
+    """
+    Return the index of the given date. This function is used to plot the data starting at the given date
+    """
     return np.argwhere(confirmed.columns == date)[0,0]-4
 
 
 
 #%% data to be used to generate the plots
 
-countries = ['Italy','France','Switzerland','Spain','Netherlands']
-populations = [60.5e6, 67e6, 8.6e6, 46.6e6, 17.2e6]
-n_countries = [0,9,3,5,10]
+countries = ['Italy','France','Switzerland','Spain','Netherlands','US']
+populations = [60.5e6, 67e6, 8.6e6, 46.6e6, 17.2e6,328e6]
+n_countries = [0,9,3,5,10,10]
 date = '2/22/20'
 
 # For the ongoing part, I want to compare one european country with Italy, which can be quite tricky
@@ -95,11 +112,9 @@ fig1.suptitle('COVID-19 Comparison of different normalised european countries \n
     
 #%% Plot 2: number of new cases and cumulative cases for different european countries
 
-numberOfDays = 10 
-
-
-fig2, axs = plt.subplots(2,2,figsize = (10,10))
+fig2, axs = plt.subplots(3,2,figsize = (10,15))
 axs = axs.ravel()
+
 for i, ax in enumerate(axs):
     
     country = countries[i]
@@ -108,7 +123,7 @@ for i, ax in enumerate(axs):
     newCases = cumulative[1:]-cumulative[:-1]
     
     x = range(len(cumulative))
-    fit = np.polyfit(np.log(x[-numberOfDays:]),np.log(cumulative[-numberOfDays:]),1)
+    fit = np.polyfit(np.log(x[-10:]),np.log(cumulative[-10:]),1)
     print(fit)
     
     ax.set_title(country + '  (' + str(getNumberOfInfectedForCountry(country)) + ' cases)')
@@ -130,11 +145,61 @@ for i, ax in enumerate(axs):
 fig2.subplots_adjust(wspace=0.8,hspace=0.4)
 fig2.suptitle('COVID-19 Number of cases in various countries \nDate : '+ confirmed.columns[-1])
 
+#%% Plot 3: Infected, Death and Recoverded
+
+
+fig3, axs = plt.subplots(3,2,figsize = (10,15))
+axs = axs.ravel()
+date = '3/10/20'
+
+for i, ax in enumerate(axs):
+    country = countries[i]
+    n = n_countries[i]
+    cumulative = getInfected(country,getDateIndex(date)) 
+    deaths = getDeaths(country,getDateIndex(date))
+    recovereds = getRecovered(country,getDateIndex(date))   
+    
+    x = np.arange(len(cumulative)) # range(len(cumulative))
+    width = 0.5
+    
+    
+    title = country + ' \n(Infected, Deads, Recovered)\n({},  {},  {})'.format(cumulative[-1],deaths[-1],recovereds[-1]) 
+    ax.set_title(title)    
+    ax.bar(x,cumulative,width, label='Infected')
+    ax.bar(x,deaths,width, bottom=cumulative,label = 'Deads')
+    ax.bar(x,recovereds,width,bottom=cumulative+deaths, label = 'Recovered')
+    ax.set_xlabel('Number of days after ' + date)
+    ax.legend()
+    #ax.tick_params(axis='y')
+    
+
+fig3.subplots_adjust(wspace=0.8,hspace=0.4)
+fig3.suptitle('COVID-19 Number of infected, deaths and recovered in various countries \nDate : '+ confirmed.columns[-1])
+
 
 #%% Export the figures 
 
 today = confirmed.columns[-1]
 todayFormated = today[2:4] + '_' + today[0]
-fig1.savefig(todayFormated + '_normalisedComparisonWithItaly')
-fig2.savefig(todayFormated + '_numberOfCases')
+fig1.savefig('figures/_normalisedComparisonWithItaly')
+fig2.savefig('figures/_numberOfCases')
+fig3.savefig('figures/_infectedDeathsRecovered')
 
+#%% Push to github
+
+from git import Repo
+
+PATH_OF_GIT_REPO =  '.git' 
+COMMIT_MESSAGE = 'comment from python script'
+
+def git_push():
+    try:
+        repo = Repo(PATH_OF_GIT_REPO)
+        repo.git.add(update=True)
+        repo.index.commit(COMMIT_MESSAGE)
+        origin = repo.remote(name='origin')
+        origin.push()
+    except:
+        print('Some error occured while pushing the code')    
+
+git_push()
