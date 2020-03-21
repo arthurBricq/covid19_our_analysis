@@ -185,13 +185,8 @@ fig1.savefig('figures/_normalisedComparisonWithItaly')
 fig2.savefig('figures/_numberOfCases')
 fig3.savefig('figures/_infectedDeathsRecovered')
 
-#%% Push to github
-import git
-repo = git.Repo('.')
-# add the figures
-print(repo.git.add('figures'))
-print(repo.git.status())
-# commit 
-# print(repo.git.commit('my commit message'))
-# # now we are one commit ahead
-# print(repo.git.status())
+#%% Push them to github (if wanted, password required) 
+
+system("git add figures")
+system("git commit -m \"Adding new figures\"")
+system("git push")
