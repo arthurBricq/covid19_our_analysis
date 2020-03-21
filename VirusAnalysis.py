@@ -186,20 +186,12 @@ fig2.savefig('figures/_numberOfCases')
 fig3.savefig('figures/_infectedDeathsRecovered')
 
 #%% Push to github
-
-from git import Repo
-
-PATH_OF_GIT_REPO =  '.git' 
-COMMIT_MESSAGE = 'comment from python script'
-
-def git_push():
-    try:
-        repo = Repo(PATH_OF_GIT_REPO)
-        repo.git.add(update=True)
-        repo.index.commit(COMMIT_MESSAGE)
-        origin = repo.remote(name='origin')
-        origin.push()
-    except:
-        print('Some error occured while pushing the code')    
-
-git_push()
+import git
+repo = git.Repo('.')
+# add the figures
+print(repo.git.add('figures'))
+print(repo.git.status())
+# commit 
+# print(repo.git.commit('my commit message'))
+# # now we are one commit ahead
+# print(repo.git.status())
