@@ -11,7 +11,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from os import system 
 
-
 #%% Get the data 
 
 path = "../COVID-19/csse_covid_19_data/csse_covid_19_time_series/"
@@ -78,9 +77,9 @@ def getDateIndex(date):
 
 #%% data to be used to generate the plots
 
-countries = ['Italy','France','Switzerland','Spain','Netherlands','US']
-populations = [60.5e6, 67e6, 8.6e6, 46.6e6, 17.2e6,328e6]
-n_countries = [0,9,3,5,10,10]
+countries = ['Italy','France','Switzerland','Spain','Netherlands','US','Germany','United Kingdom']
+populations = [60.5e6, 67e6, 8.6e6, 46.6e6, 17.2e6,328e6,82.8e6,66.4e6]
+n_countries = [0,9,5,5,10,10]
 date = '2/22/20'
 
 # For the ongoing part, I want to compare one european country with Italy, which can be quite tricky
@@ -90,7 +89,7 @@ date = '2/22/20'
 
 fig1, axs = plt.subplots(2,2,figsize = (10,12))
 axs = axs.ravel()
-
+ 
 for i, ax in enumerate(axs):
 
     country = countries[i+1]
@@ -177,6 +176,24 @@ fig3.subplots_adjust(wspace=0.8,hspace=0.4)
 fig3.suptitle('COVID-19 Number of infected, deaths and recovered in various countries \nDate : '+ confirmed.columns[-1])
 
 
+
+#%% Plot 4: comparison of relative evolution of the virus
+
+fig4, ax = plt.subplots(figsize = (10,12))
+startingRatio = 2e-5
+for i in range(len(countries)):
+
+    country = countries[i]
+    y_country = getInfected(country,getDateIndex(date)) # / populations[i]
+    y_country = y_country[y_country>startingRatio]
+
+    ax.plot(y_country,'x-.',label=country+'  ({} infected cases)'.format(getNumberOfInfectedForCountry(country)))
+    ax.set_xlabel('Number of days after starting date ')
+    ax.set_ylabel('Ratio of infected persons')
+    ax.set_title('Ratio of infected persons for several coutries \nDate : '+ confirmed.columns[-1])
+    ax.legend()
+
+
 #%% Export the figures 
 
 today = confirmed.columns[-1]
@@ -184,8 +201,10 @@ todayFormated = today[2:4] + '_' + today[0]
 fig1.savefig('figures/_normalisedComparisonWithItaly')
 fig2.savefig('figures/_numberOfCases')
 fig3.savefig('figures/_infectedDeathsRecovered')
+fig4.savefig('figures/_ratioComparisons')
 
-#%% Push them to github (if wanted, password required) 
+
+#%% Push them to github (ONLY WORKS WITH IDE SPYDER) 
 
 system("git add figures")
 system("git commit -m \"Adding new figures\"")
