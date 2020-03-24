@@ -14,9 +14,13 @@ from os import system
 #%% Get the data 
 
 path = "../COVID-19/csse_covid_19_data/csse_covid_19_time_series/"
-confirmed = pd.read_csv(path + "time_series_19-covid-Confirmed.csv")    
-death = pd.read_csv(path + "time_series_19-covid-Deaths.csv")     
-recovered = pd.read_csv(path + "time_series_19-covid-Recovered.csv")    
+confirmed = pd.read_csv(path + "time_series_19-covid-Confirmed.csv").fillna(0)    
+death = pd.read_csv(path + "time_series_19-covid-Deaths.csv").fillna(0)    
+recovered = pd.read_csv(path + "time_series_19-covid-Recovered.csv").fillna(0)      
+
+confirmed = pd.read_csv(path + "time_series_covid19_confirmed_global.csv")
+death = pd.read_csv(path + "time_series_covid19_deaths_global.csv")
+
 
 #%% Basic operations
 
@@ -77,8 +81,8 @@ def getDateIndex(date):
 
 #%% data to be used to generate the plots
 
-countries = ['Italy','France','Switzerland','Spain','Netherlands','US','Germany','United Kingdom']
-populations = [60.5e6, 67e6, 8.6e6, 46.6e6, 17.2e6,328e6,82.8e6,66.4e6]
+countries = ['Italy','France','Switzerland','Spain','Netherlands','US','Germany','United Kingdom','Iran']
+populations = [60.5e6, 67e6, 8.6e6, 46.6e6, 17.2e6, 328e6, 82.8e6, 66.4e6, 81.16e6]
 n_countries = [0,9,5,5,10,10]
 date = '2/22/20'
 
@@ -91,7 +95,6 @@ fig1, axs = plt.subplots(2,2,figsize = (10,12))
 axs = axs.ravel()
  
 for i, ax in enumerate(axs):
-
     country = countries[i+1]
     n = n_countries[i+1]
     y_italy = getInfected('Italy',getDateIndex(date)) / populations[0]
@@ -111,13 +114,13 @@ fig1.suptitle('COVID-19 Comparison of different normalised european countries \n
     
 #%% Plot 2: number of new cases and cumulative cases for different european countries
 
-fig2, axs = plt.subplots(3,2,figsize = (10,15))
+fig2, axs = plt.subplots(3,3,figsize = (10,10))
+
 axs = axs.ravel()
 
 for i, ax in enumerate(axs):
-    
+    if i == len(countries): break
     country = countries[i]
-    n = n_countries[i]
     cumulative = getInfected(country,getDateIndex(date)) 
     newCases = cumulative[1:]-cumulative[:-1]
     
@@ -140,40 +143,37 @@ for i, ax in enumerate(axs):
     ax2.tick_params(axis='y', labelcolor='red')
     # ax2.plot(np.log(x), np.log(fit[0] * x + fit[1]))
     
-    
 fig2.subplots_adjust(wspace=0.8,hspace=0.4)
 fig2.suptitle('COVID-19 Number of cases in various countries \nDate : '+ confirmed.columns[-1])
 
 #%% Plot 3: Infected, Death and Recoverded
 
 
-fig3, axs = plt.subplots(3,2,figsize = (10,15))
+fig3, axs = plt.subplots(3,3,figsize = (10,14))
 axs = axs.ravel()
 date = '3/10/20'
 
 for i, ax in enumerate(axs):
+    if i == len(countries): break
     country = countries[i]
-    n = n_countries[i]
     cumulative = getInfected(country,getDateIndex(date)) 
     deaths = getDeaths(country,getDateIndex(date))
-    recovereds = getRecovered(country,getDateIndex(date))   
+    # recovereds = getRecovered(country,getDateIndex(date))   
     
     x = np.arange(len(cumulative)) # range(len(cumulative))
     width = 0.5
     
-    
-    title = country + ' \n(Infected, Deads, Recovered)\n({},  {},  {})'.format(cumulative[-1],deaths[-1],recovereds[-1]) 
+    title = country + ' \n(Infected, Deads)\n({},  {})'.format(cumulative[-1],deaths[-1]) 
     ax.set_title(title)    
     ax.bar(x,cumulative,width, label='Infected')
     ax.bar(x,deaths,width, bottom=cumulative,label = 'Deads')
-    ax.bar(x,recovereds,width,bottom=cumulative+deaths, label = 'Recovered')
+    # ax.bar(x,recovereds,width,bottom=cumulative+deaths, label = 'Recovered')
     ax.set_xlabel('Number of days after ' + date)
     ax.legend()
     #ax.tick_params(axis='y')
     
-
 fig3.subplots_adjust(wspace=0.8,hspace=0.4)
-fig3.suptitle('COVID-19 Number of infected, deaths and recovered in various countries \nDate : '+ confirmed.columns[-1])
+fig3.suptitle('COVID-19 Number of infected, deaths and recovered in various countries \nDate : '+ confirmed.columns[-1]) 
 
 
 
@@ -181,17 +181,18 @@ fig3.suptitle('COVID-19 Number of infected, deaths and recovered in various coun
 
 fig4, ax = plt.subplots(figsize = (10,12))
 startingRatio = 2e-5
+date = '2/22/20'
+
 for i in range(len(countries)):
-
     country = countries[i]
-    y_country = getInfected(country,getDateIndex(date)) # / populations[i]
+    y_country = getInfected(country,getDateIndex(date)) / populations[i]
     y_country = y_country[y_country>startingRatio]
-
-    ax.plot(y_country,'x-.',label=country+'  ({} infected cases)'.format(getNumberOfInfectedForCountry(country)))
-    ax.set_xlabel('Number of days after starting date ')
-    ax.set_ylabel('Ratio of infected persons')
-    ax.set_title('Ratio of infected persons for several coutries \nDate : '+ confirmed.columns[-1])
-    ax.legend()
+    plt.plot(y_country,'o-',linewidth=1.2,label=country+'  ({} infected cases)'.format(getNumberOfInfectedForCountry(country)))
+    
+plt.xlabel('Number of days after starting date ')
+plt.ylabel('Ratio of infected persons')
+plt.title('Ratio of infected persons for several coutries \nDate : '+ confirmed.columns[-1])
+plt.legend()
 
 
 #%% Export the figures 
