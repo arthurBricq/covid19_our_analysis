@@ -6,7 +6,7 @@ We will participate to the Hackaton done in Lausanne and sponsored by EPFL, to c
 
 We have access to very accurate and updated database from many regions accross the world (at least every western country has accurate database). 
 
-We already worked with this data, you can checkout this link : [data processing link](README.md)
+We already worked with this data, you can checkout this link : [COVID Visualisation](README.md)
 
 ## The model that we have so far
 
