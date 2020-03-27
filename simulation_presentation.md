@@ -22,7 +22,7 @@ This model includes 5 types of persons
 
 Our model also includes different confinement strategies, to take into account the influence of the confinment in this region. Using our dynamic model, we already obtained promising results that have already been observed with epydimic spreading in the past. 
 
-![]('./figures/sim.png')
+![](./figures/sim.png)
 
 Those resultst are not fitting (yet) what has been observed with the COVID-19, and there are many parameters to tune in order to make our model accurate. 
 We also want to make it more complex by 
