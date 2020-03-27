@@ -6,7 +6,7 @@ We will participate to the Hackaton done in Lausanne and sponsored by EPFL, to c
 
 We have access to very accurate and updated database from many regions accross the world (at least every western country has accurate database). 
 
-We already worked with this data, you can checkout this link : [data processing link]: 'README.md'
+We already worked with this data, you can checkout this link : [data processing link]:'README.md'
 
 ## The model that we have so far
 
@@ -22,7 +22,7 @@ This model includes 5 types of persons
 
 Our model also includes different confinement strategies, to take into account the influence of the confinment in this region. Using our dynamic model, we already obtained promising results that have already been observed with epydimic spreading in the past. 
 
-!['figures/sim.png']
+![]('./figures/sim.png')
 
 Those resultst are not fitting (yet) what has been observed with the COVID-19, and there are many parameters to tune in order to make our model accurante. 
 We also want to make the model more complex by 
