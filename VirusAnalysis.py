@@ -14,9 +14,9 @@ from os import system
 #%% Get the data 
 
 path = "../COVID-19/csse_covid_19_data/csse_covid_19_time_series/"
-confirmed = pd.read_csv(path + "time_series_19-covid-Confirmed.csv").fillna(0)    
-death = pd.read_csv(path + "time_series_19-covid-Deaths.csv").fillna(0)    
-recovered = pd.read_csv(path + "time_series_19-covid-Recovered.csv").fillna(0)      
+# confirmed = pd.read_csv(path + "time_series_19-covid-Confirmed.csv").fillna(0)    
+# death = pd.read_csv(path + "time_series_19-covid-Deaths.csv").fillna(0)    
+# recovered = pd.read_csv(path + "time_series_19-covid-Recovered.csv").fillna(0)      
 
 confirmed = pd.read_csv(path + "time_series_covid19_confirmed_global.csv")
 death = pd.read_csv(path + "time_series_covid19_deaths_global.csv")
@@ -61,15 +61,17 @@ def getDeaths(country,start,numberOfDays=confirmed.keys().shape[0]-4):
     - numberOfDays: if not set, will display until last day
     """
     return sum(death[confirmed['Country/Region'] == country].iloc[:,4+start:4+numberOfDays].values)
-
-def getRecovered(country,start,numberOfDays=confirmed.keys().shape[0]-4):
-    """
-    Returns an array with the cumulative number of recovered starting from day start to day end.
-    - start is supposed to be indexed (starting from 0)
-    0 means it is day 1/22/20 (January 22)
-    - numberOfDays: if not set, will display until last day
-    """
-    return sum(recovered[confirmed['Country/Region'] == country].iloc[:,4+start:4+numberOfDays].values)
+# =============================================================================
+# 
+# def getRecovered(country,start,numberOfDays=confirmed.keys().shape[0]-4):
+#     """
+#     Returns an array with the cumulative number of recovered starting from day start to day end.
+#     - start is supposed to be indexed (starting from 0)
+#     0 means it is day 1/22/20 (January 22)
+#     - numberOfDays: if not set, will display until last day
+#     """
+#     return sum(recovered[confirmed['Country/Region'] == country].iloc[:,4+start:4+numberOfDays].values)
+# =============================================================================
 
 def getDateIndex(date):
     """
